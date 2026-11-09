@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'screens/auth_screen.dart';
 
 /// Marka adı buradan değiştirilebilir.
 /// GoTrendy adı kullanılamazsa false yaparak GoPlay gösterilebilir.
@@ -38,6 +41,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with TickerProviderStateMixin {
   late final AnimationController _entranceController;
+  late final Timer _splashTimer;
   late final AnimationController _idleController;
   late final Animation<double> _scaleAnimation;
   late final Animation<double> _fadeAnimation;
@@ -97,10 +101,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     });
 
     _entranceController.forward();
+    _splashTimer = Timer(const Duration(milliseconds: 3200), () {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const AuthScreen(brandName: appName),
+        ),
+      );
+    });
   }
 
   @override
   void dispose() {
+    _splashTimer.cancel();
     _entranceController.dispose();
     _idleController.dispose();
     super.dispose();
