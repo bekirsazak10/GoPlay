@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  const AuthScreen({super.key, required this.brandName});
+
+  final String brandName;
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -64,8 +66,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 12),
-                    const Text(
-                      'GoTrendy',
+                    Text(
+                      widget.brandName,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFFF2F2F2),
@@ -219,7 +221,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       'Devam ederek Kullanım Koşulları ve Gizlilik Politikası’nı kabul etmiş olursunuz.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.42),
+                        color: Colors.white.withOpacity(0.42),
                         fontSize: 11,
                         height: 1.5,
                       ),
