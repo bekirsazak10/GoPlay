@@ -14,6 +14,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLogin = true;
   bool _hidePassword = true;
@@ -23,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -166,6 +168,83 @@ class _AuthScreenState extends State<AuthScreen> {
                               return null;
                             },
                           ),
+                          if (!_isLogin) ...[
+                            const SizedBox(height: 20),
+                            _fieldLabel('Şifre tekrar'),
+                            const SizedBox(height: 9),
+                            _input(
+                              controller: _confirmPasswordController,
+                              hint: 'Şifrenizi tekrar girin',
+                              icon: Icons.lock_outline,
+                              obscureText: _hidePassword,
+                              validator: (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Şifreler eşleşmiyor.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            FormField<bool>(
+                              validator: (value) {
+                                if (value != true) {
+                                  return 'Devam etmek için koşulları kabul edin.';
+                                }
+                                return null;
+                              },
+                              builder: (field) {
+                                final accepted = field.value ?? false;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      borderRadius: BorderRadius.circular(8),
+                                      onTap: () => field.didChange(!accepted),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Checkbox(
+                                            value: accepted,
+                                            onChanged: field.didChange,
+                                            activeColor: const Color(0xFFF1F1F1),
+                                            checkColor: Colors.black,
+                                            side: const BorderSide(
+                                              color: Color(0xFF777777),
+                                            ),
+                                          ),
+                                          const Expanded(
+                                            child: Text(
+                                              'Kullanım Koşulları ve Gizlilik Politikası’nı okudum ve kabul ediyorum.',
+                                              style: TextStyle(
+                                                color: Color(0xFFBDBDBD),
+                                                fontSize: 12,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (field.hasError)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 12,
+                                          top: 2,
+                                        ),
+                                        child: Text(
+                                          field.errorText!,
+                                          style: const TextStyle(
+                                            color: Color(0xFFCF7777),
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
                           if (_isLogin) ...[
                             const SizedBox(height: 10),
                             Align(
@@ -218,7 +297,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     const SizedBox(height: 26),
                     Text(
-                      'Devam ederek Kullanım Koşulları ve Gizlilik Politikası’nı kabul etmiş olursunuz.',
+                      'Hesap güvenliğiniz için şifrenizi kimseyle paylaşmayın.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.42),
