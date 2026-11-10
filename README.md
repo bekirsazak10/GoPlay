@@ -6,7 +6,7 @@ Flutter starter for the premium black-and-matte-white app experience.
 
 - Animated welcome screen: the brand name enters with a bounce animation.
 - Login screen: email and password fields, password visibility toggle and form validation.
-- Registration screen: name, email and password fields with form validation.
+- Registration screen: name, email, password confirmation and required terms/privacy acceptance with form validation.
 - The welcome screen automatically opens the authentication screen after a short pause.
 - The displayed brand name is controlled from `lib/main.dart`.
 
