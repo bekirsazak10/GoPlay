@@ -5,6 +5,11 @@ import 'package:gotrendy/screens/auth_screen.dart';
 void main() {
   group('AuthScreen', () {
     Future<void> openScreen(WidgetTester tester) async {
+      tester.view.physicalSize = const Size(900, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         const MaterialApp(
           home: AuthScreen(brandName: 'GoPlay'),
@@ -24,10 +29,18 @@ void main() {
       String confirmation = '123456',
     }) async {
       final fields = find.byType(TextFormField);
-      await tester.enterText(fields.at(0), 'Bekir Sazak');
-      await tester.enterText(fields.at(1), 'bekir@example.com');
-      await tester.enterText(fields.at(2), password);
-      await tester.enterText(fields.at(3), confirmation);
+      final values = [
+        'Bekir Sazak',
+        'bekir@example.com',
+        password,
+        confirmation,
+      ];
+
+      for (var index = 0; index < values.length; index++) {
+        final field = fields.at(index);
+        await tester.ensureVisible(field);
+        await tester.enterText(field, values[index]);
+      }
     }
 
     testWidgets('login form validates email and password', (tester) async {
@@ -70,7 +83,9 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.byType(Checkbox));
+      final checkbox = find.byType(Checkbox);
+      await tester.ensureVisible(checkbox);
+      await tester.tap(checkbox);
       await tester.pumpAndSettle();
       await tester.ensureVisible(submitButton);
       await tester.tap(submitButton);
