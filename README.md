@@ -17,6 +17,17 @@ Flutter starter for the premium black-and-matte-white app experience.
 3. Run `flutter pub get`.
 4. Run `flutter run`.
 
+## Run checks
+
+Run the static analysis and authentication widget tests:
+
+```bash
+flutter analyze
+flutter test
+```
+
+GitHub Actions runs these checks for pushes and pull requests targeting `main`.
+
 ## Change the displayed brand
 
 Open `lib/main.dart` and change:
