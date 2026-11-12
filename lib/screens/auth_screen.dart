@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.brandName});

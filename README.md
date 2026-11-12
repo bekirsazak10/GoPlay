@@ -1,6 +1,6 @@
 # GoTrendy / GoPlay
 
-Flutter starter for the premium black-and-matte-white app experience.
+Flutter starter for the premium black-and-matte-white app experience. Material widgets use Flutter's official standalone `material_ui` package.
 
 ## Current screens
 
@@ -12,7 +12,7 @@ Flutter starter for the premium black-and-matte-white app experience.
 
 ## Run locally
 
-1. Install Flutter.
+1. Install Flutter 3.47.9 or newer (Dart 3.13+).
 2. In the repository folder, run `flutter create .` to generate the platform folders.
 3. Run `flutter pub get`.
 4. Run `flutter run`.
