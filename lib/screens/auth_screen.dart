@@ -300,7 +300,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       'Hesap güvenliğiniz için şifrenizi kimseyle paylaşmayın.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.42),
+                        color: const Color.fromRGBO(255, 255, 255, 0.42),
                         fontSize: 11,
                         height: 1.5,
                       ),
