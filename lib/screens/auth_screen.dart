@@ -18,6 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _isLogin = true;
   bool _hidePassword = true;
+  bool _hideConfirmPassword = true;
 
   @override
   void dispose() {
@@ -150,6 +151,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             icon: Icons.lock_outline,
                             obscureText: _hidePassword,
                             suffix: IconButton(
+                              tooltip: _hidePassword
+                                  ? 'Şifreyi göster'
+                                  : 'Şifreyi gizle',
                               onPressed: () => setState(
                                 () => _hidePassword = !_hidePassword,
                               ),
@@ -176,7 +180,23 @@ class _AuthScreenState extends State<AuthScreen> {
                               controller: _confirmPasswordController,
                               hint: 'Şifrenizi tekrar girin',
                               icon: Icons.lock_outline,
-                              obscureText: _hidePassword,
+                              obscureText: _hideConfirmPassword,
+                              suffix: IconButton(
+                                tooltip: _hideConfirmPassword
+                                    ? 'Şifreyi göster'
+                                    : 'Şifreyi gizle',
+                                onPressed: () => setState(
+                                  () => _hideConfirmPassword =
+                                      !_hideConfirmPassword,
+                                ),
+                                icon: Icon(
+                                  _hideConfirmPassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: const Color(0xFF929292),
+                                  size: 20,
+                                ),
+                              ),
                               validator: (value) {
                                 if (value != _passwordController.text) {
                                   return 'Şifreler eşleşmiyor.';
