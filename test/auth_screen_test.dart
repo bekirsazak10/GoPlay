@@ -53,6 +53,26 @@ void main() {
       expect(find.text('Şifre en az 6 karakter olmalı.'), findsOneWidget);
     });
 
+    testWidgets('password visibility controls are independent', (tester) async {
+      await openRegistration(tester);
+
+      final fields = find.byType(TextFormField);
+      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isTrue);
+      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isTrue);
+
+      await tester.tap(find.byTooltip('Şifreyi göster').first);
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isFalse);
+      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isTrue);
+
+      await tester.tap(find.byTooltip('Şifreyi göster'));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isFalse);
+      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isFalse);
+    });
+
     testWidgets('registration rejects mismatched passwords', (tester) async {
       await openRegistration(tester);
       await fillRegistration(
