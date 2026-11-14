@@ -53,6 +53,54 @@ void main() {
       expect(find.text('Şifre en az 6 karakter olmalı.'), findsOneWidget);
     });
 
+    testWidgets('login and registration fields support autofill', (tester) async {
+      await openScreen(tester);
+
+      var fields = find.byType(TextFormField);
+      expect(
+        tester.widget<TextFormField>(fields.at(0)).autofillHints,
+        contains(AutofillHints.username),
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(1)).autofillHints,
+        contains(AutofillHints.password),
+      );
+      expect(find.byType(AutofillGroup), findsOneWidget);
+
+      await tester.tap(find.text('Kayıt ol'));
+      await tester.pumpAndSettle();
+
+      fields = find.byType(TextFormField);
+      expect(
+        tester.widget<TextFormField>(fields.at(0)).autofillHints,
+        contains(AutofillHints.name),
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(1)).autofillHints,
+        contains(AutofillHints.newUsername),
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(2)).autofillHints,
+        contains(AutofillHints.newPassword),
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(3)).autofillHints,
+        contains(AutofillHints.newPassword),
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(0)).textCapitalization,
+        TextCapitalization.words,
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(1)).keyboardType,
+        TextInputType.emailAddress,
+      );
+      expect(
+        tester.widget<TextFormField>(fields.at(2)).enableSuggestions,
+        isFalse,
+      );
+    });
+
     testWidgets('password visibility controls are independent', (tester) async {
       await openRegistration(tester);
 
