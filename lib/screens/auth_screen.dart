@@ -72,7 +72,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     Text(
                       widget.brandName,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color(0xFFF2F2F2),
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
@@ -105,92 +105,81 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (!_isLogin) ...[
-                            _fieldLabel('Ad soyad'),
+                    AutofillGroup(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (!_isLogin) ...[
+                              _fieldLabel('Ad soyad'),
+                              const SizedBox(height: 9),
+                              _input(
+                                controller: _nameController,
+                                hint: 'Adınızı ve soyadınızı girin',
+                                icon: Icons.person_outline,
+                                autofillHints: const [AutofillHints.name],
+                                textCapitalization: TextCapitalization.words,
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value == null || value.trim().length < 3) {
+                                    return 'Lütfen adınızı ve soyadınızı girin.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                            _fieldLabel('E-posta'),
                             const SizedBox(height: 9),
                             _input(
-                              controller: _nameController,
-                              hint: 'Adınızı ve soyadınızı girin',
-                              icon: Icons.person_outline,
+                              controller: _emailController,
+                              hint: 'ornek@mail.com',
+                              icon: Icons.mail_outline,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              autocorrect: false,
+                              autofillHints: [
+                                _isLogin
+                                    ? AutofillHints.username
+                                    : AutofillHints.newUsername,
+                              ],
                               validator: (value) {
-                                if (value == null || value.trim().length < 3) {
-                                  return 'Lütfen adınızı ve soyadınızı girin.';
+                                final email = value?.trim() ?? '';
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
+                                    .hasMatch(email)) {
+                                  return 'Geçerli bir e-posta adresi girin.';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 20),
-                          ],
-                          _fieldLabel('E-posta'),
-                          const SizedBox(height: 9),
-                          _input(
-                            controller: _emailController,
-                            hint: 'ornek@mail.com',
-                            icon: Icons.mail_outline,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              final email = value?.trim() ?? '';
-                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
-                                  .hasMatch(email)) {
-                                return 'Geçerli bir e-posta adresi girin.';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          _fieldLabel('Şifre'),
-                          const SizedBox(height: 9),
-                          _input(
-                            controller: _passwordController,
-                            hint: 'Şifrenizi girin',
-                            icon: Icons.lock_outline,
-                            obscureText: _hidePassword,
-                            suffix: IconButton(
-                              tooltip: _hidePassword
-                                  ? 'Şifreyi göster'
-                                  : 'Şifreyi gizle',
-                              onPressed: () => setState(
-                                () => _hidePassword = !_hidePassword,
-                              ),
-                              icon: Icon(
-                                _hidePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                color: const Color(0xFF929292),
-                                size: 20,
-                              ),
-                            ),
-                            validator: (value) {
-                              if ((value ?? '').length < 6) {
-                                return 'Şifre en az 6 karakter olmalı.';
-                              }
-                              return null;
-                            },
-                          ),
-                          if (!_isLogin) ...[
-                            const SizedBox(height: 20),
-                            _fieldLabel('Şifre tekrar'),
+                            _fieldLabel('Şifre'),
                             const SizedBox(height: 9),
                             _input(
-                              controller: _confirmPasswordController,
-                              hint: 'Şifrenizi tekrar girin',
+                              controller: _passwordController,
+                              hint: 'Şifrenizi girin',
                               icon: Icons.lock_outline,
-                              obscureText: _hideConfirmPassword,
+                              obscureText: _hidePassword,
+                              textInputAction: _isLogin
+                                  ? TextInputAction.done
+                                  : TextInputAction.next,
+                              autocorrect: false,
+                              enableSuggestions: false,
+                              autofillHints: [
+                                _isLogin
+                                    ? AutofillHints.password
+                                    : AutofillHints.newPassword,
+                              ],
                               suffix: IconButton(
-                                tooltip: _hideConfirmPassword
+                                tooltip: _hidePassword
                                     ? 'Şifreyi göster'
                                     : 'Şifreyi gizle',
                                 onPressed: () => setState(
-                                  () => _hideConfirmPassword =
-                                      !_hideConfirmPassword,
+                                  () => _hidePassword = !_hidePassword,
                                 ),
                                 icon: Icon(
-                                  _hideConfirmPassword
+                                  _hidePassword
                                       ? Icons.visibility_outlined
                                       : Icons.visibility_off_outlined,
                                   color: const Color(0xFF929292),
@@ -198,129 +187,168 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                               ),
                               validator: (value) {
-                                if (value != _passwordController.text) {
-                                  return 'Şifreler eşleşmiyor.';
+                                if ((value ?? '').length < 6) {
+                                  return 'Şifre en az 6 karakter olmalı.';
                                 }
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16),
-                            FormField<bool>(
-                              validator: (value) {
-                                if (value != true) {
-                                  return 'Devam etmek için koşulları kabul edin.';
-                                }
-                                return null;
-                              },
-                              builder: (field) {
-                                final accepted = field.value ?? false;
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    InkWell(
-                                      borderRadius: BorderRadius.circular(8),
-                                      onTap: () => field.didChange(!accepted),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Checkbox(
-                                            value: accepted,
-                                            onChanged: field.didChange,
-                                            activeColor: const Color(0xFFF1F1F1),
-                                            checkColor: Colors.black,
-                                            side: const BorderSide(
-                                              color: Color(0xFF777777),
-                                            ),
-                                          ),
-                                          const Expanded(
-                                            child: Text(
-                                              'Kullanım Koşulları ve Gizlilik Politikası’nı okudum ve kabul ediyorum.',
-                                              style: TextStyle(
-                                                color: Color(0xFFBDBDBD),
-                                                fontSize: 12,
-                                                height: 1.4,
+                            if (!_isLogin) ...[
+                              const SizedBox(height: 20),
+                              _fieldLabel('Şifre tekrar'),
+                              const SizedBox(height: 9),
+                              _input(
+                                controller: _confirmPasswordController,
+                                hint: 'Şifrenizi tekrar girin',
+                                icon: Icons.lock_outline,
+                                obscureText: _hideConfirmPassword,
+                                textInputAction: TextInputAction.done,
+                                autocorrect: false,
+                                enableSuggestions: false,
+                                autofillHints: const [AutofillHints.newPassword],
+                                suffix: IconButton(
+                                  tooltip: _hideConfirmPassword
+                                      ? 'Şifreyi göster'
+                                      : 'Şifreyi gizle',
+                                  onPressed: () => setState(
+                                    () => _hideConfirmPassword =
+                                        !_hideConfirmPassword,
+                                  ),
+                                  icon: Icon(
+                                    _hideConfirmPassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: const Color(0xFF929292),
+                                    size: 20,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value != _passwordController.text) {
+                                    return 'Şifreler eşleşmiyor.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              FormField<bool>(
+                                validator: (value) {
+                                  if (value != true) {
+                                    return 'Devam etmek için koşulları kabul edin.';
+                                  }
+                                  return null;
+                                },
+                                builder: (field) {
+                                  final accepted = field.value ?? false;
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(8),
+                                        onTap: () => field.didChange(!accepted),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Checkbox(
+                                              value: accepted,
+                                              onChanged: field.didChange,
+                                              activeColor:
+                                                  const Color(0xFFF1F1F1),
+                                              checkColor: Colors.black,
+                                              side: const BorderSide(
+                                                color: Color(0xFF777777),
                                               ),
                                             ),
+                                            const Expanded(
+                                              child: Text(
+                                                'Kullanım Koşulları ve Gizlilik Politikası’nı okudum ve kabul ediyorum.',
+                                                style: TextStyle(
+                                                  color: Color(0xFFBDBDBD),
+                                                  fontSize: 12,
+                                                  height: 1.4,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (field.hasError)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 12,
+                                            top: 2,
                                           ),
-                                        ],
+                                          child: Text(
+                                            field.errorText!,
+                                            style: const TextStyle(
+                                              color: Color(0xFFCF7777),
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                            if (_isLogin) ...[
+                              const SizedBox(height: 10),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () => ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Şifre sıfırlama daha sonra eklenecek.',
                                       ),
                                     ),
-                                    if (field.hasError)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 12,
-                                          top: 2,
-                                        ),
-                                        child: Text(
-                                          field.errorText!,
-                                          style: const TextStyle(
-                                            color: Color(0xFFCF7777),
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                );
-                              },
+                                  ),
+                                  child: const Text(
+                                    'Şifremi unuttum',
+                                    style: TextStyle(
+                                      color: Color(0xFFBDBDBD),
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ] else
+                              const SizedBox(height: 28),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 54,
+                              child: ElevatedButton(
+                                onPressed: _submit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF1F1F1),
+                                  foregroundColor: const Color(0xFF090909),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: Text(
+                                  _isLogin ? 'GİRİŞ YAP' : 'HESAP OLUŞTUR',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
-                          if (_isLogin) ...[
-                            const SizedBox(height: 10),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () => ScaffoldMessenger.of(context)
-                                    .showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Şifre sıfırlama daha sonra eklenecek.',
-                                    ),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Şifremi unuttum',
-                                  style: TextStyle(
-                                    color: Color(0xFFBDBDBD),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ] else
-                            const SizedBox(height: 28),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            height: 54,
-                            child: ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFF1F1F1),
-                                foregroundColor: const Color(0xFF090909),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                              child: Text(
-                                _isLogin ? 'GİRİŞ YAP' : 'HESAP OLUŞTUR',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 26),
-                    Text(
+                    const Text(
                       'Hesap güvenliğiniz için şifrenizi kimseyle paylaşmayın.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: const Color.fromRGBO(255, 255, 255, 0.42),
+                        color: Color.fromRGBO(255, 255, 255, 0.42),
                         fontSize: 11,
                         height: 1.5,
                       ),
@@ -385,6 +413,11 @@ class _AuthScreenState extends State<AuthScreen> {
     required IconData icon,
     required String? Function(String?) validator,
     TextInputType keyboardType = TextInputType.text,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    TextInputAction textInputAction = TextInputAction.next,
+    bool autocorrect = true,
+    bool enableSuggestions = true,
+    Iterable<String>? autofillHints,
     bool obscureText = false,
     Widget? suffix,
   }) {
@@ -392,6 +425,11 @@ class _AuthScreenState extends State<AuthScreen> {
       controller: controller,
       validator: validator,
       keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      textInputAction: textInputAction,
+      autocorrect: autocorrect,
+      enableSuggestions: enableSuggestions,
+      autofillHints: autofillHints,
       obscureText: obscureText,
       style: const TextStyle(color: Color(0xFFF2F2F2), fontSize: 14),
       cursorColor: Colors.white,
