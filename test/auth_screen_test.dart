@@ -53,6 +53,22 @@ void main() {
       expect(find.text('Şifre en az 6 karakter olmalı.'), findsOneWidget);
     });
 
+    testWidgets('login submits when the keyboard Done action is pressed',
+        (tester) async {
+      await openScreen(tester);
+
+      final fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(0), 'bekir@example.com');
+      await tester.enterText(fields.at(1), '123456');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Form hazır. Giriş servisi henüz bağlanmadı.'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('login and registration fields support autofill', (tester) async {
       await openScreen(tester);
 
