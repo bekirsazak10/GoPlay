@@ -171,6 +171,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ? AutofillHints.password
                                     : AutofillHints.newPassword,
                               ],
+                              onFieldSubmitted:
+                                  _isLogin ? (_) => _submit() : null,
                               suffix: IconButton(
                                 tooltip: _hidePassword
                                     ? 'Şifreyi göster'
@@ -206,6 +208,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 autocorrect: false,
                                 enableSuggestions: false,
                                 autofillHints: const [AutofillHints.newPassword],
+                                onFieldSubmitted: (_) => _submit(),
                                 suffix: IconButton(
                                   tooltip: _hideConfirmPassword
                                       ? 'Şifreyi göster'
@@ -419,11 +422,13 @@ class _AuthScreenState extends State<AuthScreen> {
     bool enableSuggestions = true,
     Iterable<String>? autofillHints,
     bool obscureText = false,
+    ValueChanged<String>? onFieldSubmitted,
     Widget? suffix,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
       textInputAction: textInputAction,
