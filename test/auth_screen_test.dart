@@ -2,6 +2,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gotrendy/screens/auth_screen.dart';
 
+TextField textFieldFor(WidgetTester tester, Finder formField) {
+  final textField = find.descendant(
+    of: formField,
+    matching: find.byType(TextField),
+  );
+  return tester.widget<TextField>(textField);
+}
+
 void main() {
   group('AuthScreen', () {
     Future<void> openScreen(WidgetTester tester) async {
@@ -74,11 +82,11 @@ void main() {
 
       var fields = find.byType(TextFormField);
       expect(
-        tester.widget<TextFormField>(fields.at(0)).autofillHints,
+        textFieldFor(tester, fields.at(0)).autofillHints,
         contains(AutofillHints.username),
       );
       expect(
-        tester.widget<TextFormField>(fields.at(1)).autofillHints,
+        textFieldFor(tester, fields.at(1)).autofillHints,
         contains(AutofillHints.password),
       );
       expect(find.byType(AutofillGroup), findsOneWidget);
@@ -88,31 +96,31 @@ void main() {
 
       fields = find.byType(TextFormField);
       expect(
-        tester.widget<TextFormField>(fields.at(0)).autofillHints,
+        textFieldFor(tester, fields.at(0)).autofillHints,
         contains(AutofillHints.name),
       );
       expect(
-        tester.widget<TextFormField>(fields.at(1)).autofillHints,
+        textFieldFor(tester, fields.at(1)).autofillHints,
         contains(AutofillHints.newUsername),
       );
       expect(
-        tester.widget<TextFormField>(fields.at(2)).autofillHints,
+        textFieldFor(tester, fields.at(2)).autofillHints,
         contains(AutofillHints.newPassword),
       );
       expect(
-        tester.widget<TextFormField>(fields.at(3)).autofillHints,
+        textFieldFor(tester, fields.at(3)).autofillHints,
         contains(AutofillHints.newPassword),
       );
       expect(
-        tester.widget<TextFormField>(fields.at(0)).textCapitalization,
+        textFieldFor(tester, fields.at(0)).textCapitalization,
         TextCapitalization.words,
       );
       expect(
-        tester.widget<TextFormField>(fields.at(1)).keyboardType,
+        textFieldFor(tester, fields.at(1)).keyboardType,
         TextInputType.emailAddress,
       );
       expect(
-        tester.widget<TextFormField>(fields.at(2)).enableSuggestions,
+        textFieldFor(tester, fields.at(2)).enableSuggestions,
         isFalse,
       );
     });
@@ -121,20 +129,20 @@ void main() {
       await openRegistration(tester);
 
       final fields = find.byType(TextFormField);
-      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isTrue);
-      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isTrue);
+      expect(textFieldFor(tester, fields.at(2)).obscureText, isTrue);
+      expect(textFieldFor(tester, fields.at(3)).obscureText, isTrue);
 
       await tester.tap(find.byTooltip('Şifreyi göster').first);
       await tester.pumpAndSettle();
 
-      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isFalse);
-      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isTrue);
+      expect(textFieldFor(tester, fields.at(2)).obscureText, isFalse);
+      expect(textFieldFor(tester, fields.at(3)).obscureText, isTrue);
 
       await tester.tap(find.byTooltip('Şifreyi göster'));
       await tester.pumpAndSettle();
 
-      expect(tester.widget<TextFormField>(fields.at(2)).obscureText, isFalse);
-      expect(tester.widget<TextFormField>(fields.at(3)).obscureText, isFalse);
+      expect(textFieldFor(tester, fields.at(2)).obscureText, isFalse);
+      expect(textFieldFor(tester, fields.at(3)).obscureText, isFalse);
     });
 
     testWidgets('registration rejects mismatched passwords', (tester) async {
