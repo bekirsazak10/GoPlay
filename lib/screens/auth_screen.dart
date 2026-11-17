@@ -369,29 +369,38 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget _modeButton(String label, bool loginMode) {
     final selected = _isLogin == loginMode;
     return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          if (_isLogin != loginMode) {
-            setState(() {
-              _isLogin = loginMode;
-              _formKey.currentState?.reset();
-            });
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          decoration: BoxDecoration(
-            color: selected ? const Color(0xFFEDEDED) : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: selected ? Colors.black : const Color(0xFF999999),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+      child: Semantics(
+        label: label,
+        button: true,
+        selected: selected,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            if (_isLogin != loginMode) {
+              FocusScope.of(context).unfocus();
+              setState(() {
+                _isLogin = loginMode;
+                _formKey.currentState?.reset();
+              });
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFFEDEDED) : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ExcludeSemantics(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: selected ? Colors.black : const Color(0xFF999999),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ),
