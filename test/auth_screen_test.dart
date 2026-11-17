@@ -125,6 +125,39 @@ void main() {
       );
     });
 
+    testWidgets('login and registration mode expose selected semantics',
+        (tester) async {
+      final semantics = tester.ensureSemantics();
+      addTearDown(semantics.dispose);
+
+      await openScreen(tester);
+
+      var loginMode = tester.getSemantics(
+        find.bySemanticsLabel('Giriş yap'),
+      );
+      var registrationMode = tester.getSemantics(
+        find.bySemanticsLabel('Kayıt ol'),
+      );
+
+      expect(loginMode.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(loginMode.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(registrationMode.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(registrationMode.hasFlag(SemanticsFlag.isSelected), isFalse);
+
+      await tester.tap(find.text('Kayıt ol'));
+      await tester.pumpAndSettle();
+
+      loginMode = tester.getSemantics(
+        find.bySemanticsLabel('Giriş yap'),
+      );
+      registrationMode = tester.getSemantics(
+        find.bySemanticsLabel('Kayıt ol'),
+      );
+
+      expect(loginMode.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(registrationMode.hasFlag(SemanticsFlag.isSelected), isTrue);
+    });
+
     testWidgets('password visibility controls are independent', (tester) async {
       await openRegistration(tester);
 
