@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gotrendy/screens/auth_screen.dart';
@@ -139,10 +141,19 @@ void main() {
         find.bySemanticsLabel('Kayıt ol'),
       );
 
-      expect(loginMode.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(loginMode.hasFlag(SemanticsFlag.isSelected), isTrue);
-      expect(registrationMode.hasFlag(SemanticsFlag.isButton), isTrue);
-      expect(registrationMode.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(loginMode.getSemanticsData().flagsCollection.isButton, isTrue);
+      expect(
+        loginMode.getSemanticsData().flagsCollection.isSelected,
+        Tristate.isTrue,
+      );
+      expect(
+        registrationMode.getSemanticsData().flagsCollection.isButton,
+        isTrue,
+      );
+      expect(
+        registrationMode.getSemanticsData().flagsCollection.isSelected,
+        Tristate.isFalse,
+      );
 
       await tester.tap(find.text('Kayıt ol'));
       await tester.pumpAndSettle();
@@ -154,8 +165,14 @@ void main() {
         find.bySemanticsLabel('Kayıt ol'),
       );
 
-      expect(loginMode.hasFlag(SemanticsFlag.isSelected), isFalse);
-      expect(registrationMode.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(
+        loginMode.getSemanticsData().flagsCollection.isSelected,
+        Tristate.isFalse,
+      );
+      expect(
+        registrationMode.getSemanticsData().flagsCollection.isSelected,
+        Tristate.isTrue,
+      );
     });
 
     testWidgets('password visibility controls are independent', (tester) async {
@@ -176,6 +193,39 @@ void main() {
 
       expect(textFieldFor(tester, fields.at(2)).obscureText, isFalse);
       expect(textFieldFor(tester, fields.at(3)).obscureText, isFalse);
+    });
+
+    testWidgets('switching auth modes clears passwords and hides them again',
+        (tester) async {
+      await openRegistration(tester);
+
+      var fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(1), 'bekir@example.com');
+      await tester.enterText(fields.at(2), 'secret123');
+      await tester.enterText(fields.at(3), 'secret123');
+
+      await tester.tap(find.byTooltip('Şifreyi göster').first);
+      await tester.pumpAndSettle();
+      expect(textFieldFor(tester, fields.at(2)).obscureText, isFalse);
+
+      await tester.tap(find.text('Giriş yap'));
+      await tester.pumpAndSettle();
+
+      fields = find.byType(TextFormField);
+      expect(
+        textFieldFor(tester, fields.at(0)).controller!.text,
+        'bekir@example.com',
+      );
+      expect(textFieldFor(tester, fields.at(1)).controller!.text, isEmpty);
+
+      await tester.tap(find.text('Kayıt ol'));
+      await tester.pumpAndSettle();
+
+      fields = find.byType(TextFormField);
+      expect(textFieldFor(tester, fields.at(2)).controller!.text, isEmpty);
+      expect(textFieldFor(tester, fields.at(3)).controller!.text, isEmpty);
+      expect(textFieldFor(tester, fields.at(2)).obscureText, isTrue);
+      expect(textFieldFor(tester, fields.at(3)).obscureText, isTrue);
     });
 
     testWidgets('registration rejects mismatched passwords', (tester) async {

@@ -378,8 +378,13 @@ class _AuthScreenState extends State<AuthScreen> {
           onTap: () {
             if (_isLogin != loginMode) {
               FocusScope.of(context).unfocus();
+              // Do not keep passwords in the form when changing auth modes.
+              _passwordController.clear();
+              _confirmPasswordController.clear();
               setState(() {
                 _isLogin = loginMode;
+                _hidePassword = true;
+                _hideConfirmPassword = true;
                 _formKey.currentState?.reset();
               });
             }
