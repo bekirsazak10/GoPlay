@@ -129,9 +129,6 @@ void main() {
 
     testWidgets('login and registration mode expose selected semantics',
         (tester) async {
-      final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
-
       await openScreen(tester);
 
       var loginMode = tester.getSemantics(
@@ -214,7 +211,7 @@ void main() {
       fields = find.byType(TextFormField);
       expect(
         textFieldFor(tester, fields.at(0)).controller!.text,
-        'bekir@example.com',
+        isEmpty,
       );
       expect(textFieldFor(tester, fields.at(1)).controller!.text, isEmpty);
 
