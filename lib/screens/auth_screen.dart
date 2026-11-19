@@ -62,6 +62,7 @@ class _AuthScreenState extends State<AuthScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: isWide ? 430 : 480),
