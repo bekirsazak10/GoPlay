@@ -241,6 +241,35 @@ void main() {
       expect(find.text('Şifreler eşleşmiyor.'), findsOneWidget);
     });
 
+    testWidgets('registration form supports compact screens and drag dismissal',
+        (tester) async {
+      tester.view.physicalSize = const Size(390, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AuthScreen(brandName: 'GoPlay'),
+        ),
+      );
+      await tester.tap(find.text('Kayıt ol'));
+      await tester.pumpAndSettle();
+
+      final scrollView = tester.widget<SingleChildScrollView>(
+        find.byType(SingleChildScrollView),
+      );
+      expect(
+        scrollView.keyboardDismissBehavior,
+        ScrollViewKeyboardDismissBehavior.onDrag,
+      );
+
+      final submitButton = find.text('HESAP OLUŞTUR');
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('registration requires terms acceptance', (tester) async {
       await openRegistration(tester);
       await fillRegistration(tester);
