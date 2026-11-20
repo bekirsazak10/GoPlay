@@ -378,7 +378,7 @@ class _AuthScreenState extends State<AuthScreen> {
         RegExp(r'[A-Z]').hasMatch(password)) {
       score++;
     }
-    if (RegExp(r'\\d').hasMatch(password)) score++;
+    if (RegExp(r'\d').hasMatch(password)) score++;
     if (RegExp(r'[^A-Za-z0-9]').hasMatch(password)) score++;
 
     return score;
