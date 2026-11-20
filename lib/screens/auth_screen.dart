@@ -189,6 +189,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   size: 20,
                                 ),
                               ),
+                              onChanged: _isLogin ? null : (_) => setState(() {}),
                               validator: (value) {
                                 if ((value ?? '').length < 6) {
                                   return 'Şifre en az 6 karakter olmalı.';
@@ -196,6 +197,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 return null;
                               },
                             ),
+                            _passwordStrengthIndicator(),
                             if (!_isLogin) ...[
                               const SizedBox(height: 20),
                               _fieldLabel('Şifre tekrar'),
@@ -367,6 +369,84 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  int get _passwordStrength {
+    final password = _passwordController.text;
+    var score = 0;
+
+    if (password.length >= 8) score++;
+    if (RegExp(r'[a-z]').hasMatch(password) &&
+        RegExp(r'[A-Z]').hasMatch(password)) {
+      score++;
+    }
+    if (RegExp(r'\\d').hasMatch(password)) score++;
+    if (RegExp(r'[^A-Za-z0-9]').hasMatch(password)) score++;
+
+    return score;
+  }
+
+  String get _passwordStrengthLabel {
+    final score = _passwordStrength;
+    if (score <= 1) return 'Zayıf';
+    if (score <= 3) return 'Orta';
+    return 'Güçlü';
+  }
+
+  Color get _passwordStrengthColor {
+    final score = _passwordStrength;
+    if (score <= 1) return const Color(0xFFB66C6C);
+    if (score <= 3) return const Color(0xFFC2A46A);
+    return const Color(0xFF8DAF94);
+  }
+
+  Widget _passwordStrengthIndicator() {
+    final password = _passwordController.text;
+    if (_isLogin || password.isEmpty) return const SizedBox.shrink();
+
+    final score = _passwordStrength;
+    final label = _passwordStrengthLabel;
+    final color = _passwordStrengthColor;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Semantics(
+        label: 'Şifre gücü: $label',
+        child: ExcludeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: List.generate(
+                  4,
+                  (index) => Expanded(
+                    child: Container(
+                      height: 4,
+                      margin: EdgeInsets.only(right: index == 3 ? 0 : 6),
+                      decoration: BoxDecoration(
+                        color: index < score
+                            ? color
+                            : const Color(0xFF303030),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                'Şifre gücü: $label',
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _modeButton(String label, bool loginMode) {
     final selected = _isLogin == loginMode;
     return Expanded(
@@ -439,10 +519,12 @@ class _AuthScreenState extends State<AuthScreen> {
     bool obscureText = false,
     ValueChanged<String>? onFieldSubmitted,
     Widget? suffix,
+    ValueChanged<String>? onChanged,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
+      onChanged: onChanged,
       onFieldSubmitted: onFieldSubmitted,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,

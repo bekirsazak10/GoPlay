@@ -192,6 +192,26 @@ void main() {
       expect(textFieldFor(tester, fields.at(3)).obscureText, isFalse);
     });
 
+    testWidgets('registration shows live password strength feedback',
+        (tester) async {
+      await openRegistration(tester);
+
+      final fields = find.byType(TextFormField);
+      expect(find.textContaining('Şifre gücü:'), findsNothing);
+
+      await tester.enterText(fields.at(2), '123456');
+      await tester.pump();
+      expect(find.text('Şifre gücü: Zayıf'), findsOneWidget);
+
+      await tester.enterText(fields.at(2), '12345678');
+      await tester.pump();
+      expect(find.text('Şifre gücü: Orta'), findsOneWidget);
+
+      await tester.enterText(fields.at(2), 'Sifre123!');
+      await tester.pump();
+      expect(find.text('Şifre gücü: Güçlü'), findsOneWidget);
+    });
+
     testWidgets('switching auth modes clears passwords and hides them again',
         (tester) async {
       await openRegistration(tester);
