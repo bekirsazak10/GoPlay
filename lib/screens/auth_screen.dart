@@ -405,39 +405,102 @@ class _AuthScreenState extends State<AuthScreen> {
     final score = _passwordStrength;
     final label = _passwordStrengthLabel;
     final color = _passwordStrengthColor;
+    final requirements = <MapEntry<String, bool>>[
+      MapEntry('En az 8 karakter', password.length >= 8),
+      MapEntry(
+        'Büyük ve küçük harf',
+        RegExp(r'[a-z]').hasMatch(password) &&
+            RegExp(r'[A-Z]').hasMatch(password),
+      ),
+      MapEntry('En az bir rakam', RegExp(r'\d').hasMatch(password)),
+      MapEntry('Özel karakter', RegExp(r'[^A-Za-z0-9]').hasMatch(password)),
+    ];
 
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: Semantics(
-        label: 'Şifre gücü: $label',
-        child: ExcludeSemantics(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: List.generate(
-                  4,
-                  (index) => Expanded(
-                    child: Container(
-                      height: 4,
-                      margin: EdgeInsets.only(right: index == 3 ? 0 : 6),
-                      decoration: BoxDecoration(
-                        color: index < score
-                            ? color
-                            : const Color(0xFF303030),
-                        borderRadius: BorderRadius.circular(4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            label: 'Şifre gücü: $label',
+            child: ExcludeSemantics(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: List.generate(
+                      4,
+                      (index) => Expanded(
+                        child: Container(
+                          height: 4,
+                          margin: EdgeInsets.only(right: index == 3 ? 0 : 6),
+                          decoration: BoxDecoration(
+                            color: index < score
+                                ? color
+                                : const Color(0xFF303030),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 7),
+                  Text(
+                    'Şifre gücü: $label',
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 7),
-              Text(
-                'Şifre gücü: $label',
-                style: TextStyle(
-                  color: color,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: requirements
+                .map(
+                  (requirement) => _passwordRequirement(
+                    requirement.key,
+                    requirement.value,
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _passwordRequirement(String label, bool isMet) {
+    final color = isMet
+        ? const Color(0xFF8DAF94)
+        : const Color(0xFF777777);
+
+    return SizedBox(
+      width: 150,
+      child: Semantics(
+        label: '$label: ' + (isMet ? 'tamamlandı' : 'eksik'),
+        child: ExcludeSemantics(
+          child: Row(
+            children: [
+              Icon(
+                isMet ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: color,
+                size: 14,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 11,
+                    height: 1.2,
+                  ),
                 ),
               ),
             ],

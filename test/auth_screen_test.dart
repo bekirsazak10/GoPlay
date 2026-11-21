@@ -212,6 +212,36 @@ void main() {
       expect(find.text('Şifre gücü: Güçlü'), findsOneWidget);
     });
 
+    testWidgets('registration explains each password requirement',
+        (tester) async {
+      await openRegistration(tester);
+
+      final passwordField = find.byType(TextFormField).at(2);
+      await tester.enterText(passwordField, '123456');
+      await tester.pump();
+
+      expect(find.text('En az 8 karakter'), findsOneWidget);
+      expect(find.text('Büyük ve küçük harf'), findsOneWidget);
+      expect(find.text('En az bir rakam'), findsOneWidget);
+      expect(find.text('Özel karakter'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(3));
+      expect(
+        find.bySemanticsLabel('En az 8 karakter: eksik'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(passwordField, 'Sifre123!');
+      await tester.pump();
+
+      expect(find.byIcon(Icons.check_circle), findsNWidgets(4));
+      expect(find.byIcon(Icons.radio_button_unchecked), findsNothing);
+      expect(
+        find.bySemanticsLabel('En az 8 karakter: tamamlandı'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('switching auth modes clears passwords and hides them again',
         (tester) async {
       await openRegistration(tester);
