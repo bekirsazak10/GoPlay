@@ -125,7 +125,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 validator: (value) {
                                   final nameParts = (value ?? '')
                                       .trim()
-                                      .split(RegExp(r'\\s+'))
+                                      .split(RegExp(r'\s+'))
                                       .where((part) => part.isNotEmpty);
                                   if (nameParts.length < 2) {
                                     return 'Adınızı ve soyadınızı ayrı ayrı girin.';
