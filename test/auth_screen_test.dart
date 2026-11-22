@@ -35,12 +35,13 @@ void main() {
 
     Future<void> fillRegistration(
       WidgetTester tester, {
+      String name = 'Bekir Sazak',
       String password = '123456',
       String confirmation = '123456',
     }) async {
       final fields = find.byType(TextFormField);
       final values = [
-        'Bekir Sazak',
+        name,
         'bekir@example.com',
         password,
         confirmation,
@@ -273,6 +274,27 @@ void main() {
       expect(textFieldFor(tester, fields.at(3)).controller!.text, isEmpty);
       expect(textFieldFor(tester, fields.at(2)).obscureText, isTrue);
       expect(textFieldFor(tester, fields.at(3)).obscureText, isTrue);
+    });
+
+    testWidgets('registration requires both first and last name',
+        (tester) async {
+      await openRegistration(tester);
+      await fillRegistration(tester, name: 'Bekir');
+
+      final checkbox = find.byType(Checkbox);
+      await tester.ensureVisible(checkbox);
+      await tester.tap(checkbox);
+      await tester.pumpAndSettle();
+
+      final submitButton = find.text('HESAP OLUŞTUR');
+      await tester.ensureVisible(submitButton);
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Adınızı ve soyadınızı ayrı ayrı girin.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('registration rejects mismatched passwords', (tester) async {

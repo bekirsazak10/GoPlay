@@ -123,8 +123,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
                                 validator: (value) {
-                                  if (value == null || value.trim().length < 3) {
-                                    return 'Lütfen adınızı ve soyadınızı girin.';
+                                  final nameParts = (value ?? '')
+                                      .trim()
+                                      .split(RegExp(r'\\s+'))
+                                      .where((part) => part.isNotEmpty);
+                                  if (nameParts.length < 2) {
+                                    return 'Adınızı ve soyadınızı ayrı ayrı girin.';
                                   }
                                   return null;
                                 },
