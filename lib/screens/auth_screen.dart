@@ -1,3 +1,23 @@
+bool _isValidEmailAddress(String? value) {
+  final email = value?.trim() ?? '';
+  if (email.isEmpty || email.length > 254) return false;
+
+  final parts = email.split('@');
+  if (parts.length != 2) return false;
+
+  final localPart = parts.first;
+  if (localPart.length > 64 ||
+      localPart.startsWith('.') ||
+      localPart.endsWith('.') ||
+      localPart.contains('..')) {
+    return false;
+  }
+
+  return RegExp(
+    r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$",
+  ).hasMatch(email);
+}
+
 import 'package:material_ui/material_ui.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -150,9 +170,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     : AutofillHints.newUsername,
                               ],
                               validator: (value) {
-                                final email = value?.trim() ?? '';
-                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
-                                    .hasMatch(email)) {
+                                if (!_isValidEmailAddress(value)) {
                                   return 'Geçerli bir e-posta adresi girin.';
                                 }
                                 return null;
