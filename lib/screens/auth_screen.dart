@@ -1,3 +1,5 @@
+import 'package:material_ui/material_ui.dart';
+
 bool _isValidEmailAddress(String? value) {
   final email = value?.trim() ?? '';
   if (email.isEmpty || email.length > 254) return false;
@@ -14,11 +16,9 @@ bool _isValidEmailAddress(String? value) {
   }
 
   return RegExp(
-    r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$",
+    r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:[.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$",
   ).hasMatch(email);
 }
-
-import 'package:material_ui/material_ui.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.brandName});
