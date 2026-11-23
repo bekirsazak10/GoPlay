@@ -64,6 +64,34 @@ void main() {
       expect(find.text('Şifre en az 6 karakter olmalı.'), findsOneWidget);
     });
 
+    testWidgets('login rejects malformed email addresses', (tester) async {
+      await openScreen(tester);
+
+      final emailField = find.byType(TextFormField).first;
+      final submitButton = find.text('GİRİŞ YAP');
+      const invalidEmails = [
+        'bekir @example.com',
+        'bekir@@example.com',
+        'bekir@example',
+        'bekir@example..com',
+        '.bekir@example.com',
+        'bekir..sazak@example.com',
+      ];
+
+      for (final email in invalidEmails) {
+        await tester.enterText(emailField, email);
+        await tester.ensureVisible(submitButton);
+        await tester.tap(submitButton);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Geçerli bir e-posta adresi girin.'),
+          findsOneWidget,
+          reason: 'Adres reddedilmeliydi: $email',
+        );
+      }
+    });
+
     testWidgets('login submits when the keyboard Done action is pressed',
         (tester) async {
       await openScreen(tester);
