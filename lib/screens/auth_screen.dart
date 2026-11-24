@@ -225,7 +225,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                       !RegExp(r'[A-Z]').hasMatch(password)) {
                                     return 'Şifre büyük ve küçük harf içermeli.';
                                   }
-                                  if (!RegExp(r'\\d').hasMatch(password)) {
+                                  if (!RegExp(r'\d').hasMatch(password)) {
                                     return 'Şifre en az bir rakam içermeli.';
                                   }
                                   if (!RegExp(r'[^A-Za-z0-9]').hasMatch(password)) {
