@@ -213,8 +213,24 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               onChanged: _isLogin ? null : (_) => setState(() {}),
                               validator: (value) {
-                                if ((value ?? '').length < 6) {
+                                final password = value ?? '';
+                                if (password.length < 6) {
                                   return 'Şifre en az 6 karakter olmalı.';
+                                }
+                                if (!_isLogin) {
+                                  if (password.length < 8) {
+                                    return 'Şifre en az 8 karakter olmalı.';
+                                  }
+                                  if (!RegExp(r'[a-z]').hasMatch(password) ||
+                                      !RegExp(r'[A-Z]').hasMatch(password)) {
+                                    return 'Şifre büyük ve küçük harf içermeli.';
+                                  }
+                                  if (!RegExp(r'\\d').hasMatch(password)) {
+                                    return 'Şifre en az bir rakam içermeli.';
+                                  }
+                                  if (!RegExp(r'[^A-Za-z0-9]').hasMatch(password)) {
+                                    return 'Şifre en az bir özel karakter içermeli.';
+                                  }
                                 }
                                 return null;
                               },

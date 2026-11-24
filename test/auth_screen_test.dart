@@ -36,8 +36,8 @@ void main() {
     Future<void> fillRegistration(
       WidgetTester tester, {
       String name = 'Bekir Sazak',
-      String password = '123456',
-      String confirmation = '123456',
+      String password = 'Sifre123!',
+      String confirmation = 'Sifre123!',
     }) async {
       final fields = find.byType(TextFormField);
       final values = [
@@ -304,6 +304,44 @@ void main() {
       expect(textFieldFor(tester, fields.at(3)).obscureText, isTrue);
     });
 
+    testWidgets('registration enforces every displayed password requirement',
+        (tester) async {
+      await openRegistration(tester);
+      await fillRegistration(tester);
+
+      final fields = find.byType(TextFormField);
+      final passwordField = fields.at(2);
+      final confirmationField = fields.at(3);
+      final checkbox = find.byType(Checkbox);
+      await tester.ensureVisible(checkbox);
+      await tester.tap(checkbox);
+      await tester.pumpAndSettle();
+
+      const invalidPasswords = {
+        '123456': 'Şifre en az 8 karakter olmalı.',
+        'password123!': 'Şifre büyük ve küçük harf içermeli.',
+        'PASSWORD123!': 'Şifre büyük ve küçük harf içermeli.',
+        'Password!!!': 'Şifre en az bir rakam içermeli.',
+        'Password123': 'Şifre en az bir özel karakter içermeli.',
+      };
+
+      for (final entry in invalidPasswords.entries) {
+        await tester.enterText(passwordField, entry.key);
+        await tester.enterText(confirmationField, entry.key);
+
+        final submitButton = find.text('HESAP OLUŞTUR');
+        await tester.ensureVisible(submitButton);
+        await tester.tap(submitButton);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(entry.value),
+          findsOneWidget,
+          reason: 'Şifre kuralı uygulanmalı: ${entry.key}',
+        );
+      }
+    });
+
     testWidgets('registration requires both first and last name',
         (tester) async {
       await openRegistration(tester);
@@ -329,8 +367,8 @@ void main() {
       await openRegistration(tester);
       await fillRegistration(
         tester,
-        password: '123456',
-        confirmation: '654321',
+        password: 'Sifre123!',
+        confirmation: 'Farkli123!',
       );
 
       final submitButton = find.text('HESAP OLUŞTUR');
