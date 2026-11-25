@@ -408,6 +408,62 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets(
+        'password reset dialog pre-fills email and validates the address',
+        (tester) async {
+      await openScreen(tester);
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'bekir@example.com',
+      );
+
+      await tester.tap(find.text('Şifremi unuttum'));
+      await tester.pumpAndSettle();
+
+      final dialog = find.byType(AlertDialog);
+      final resetField = find.descendant(
+        of: dialog,
+        matching: find.byType(TextFormField),
+      );
+      expect(tester.widget<TextFormField>(resetField).controller!.text,
+          'bekir@example.com');
+
+      await tester.enterText(resetField, 'bekir@@example.com');
+      await tester.tap(find.text('DEVAM ET'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text('Geçerli bir e-posta adresi girin.'), findsOneWidget);
+    });
+
+    testWidgets('password reset clearly reports the missing service',
+        (tester) async {
+      await openScreen(tester);
+
+      await tester.tap(find.text('Şifremi unuttum'));
+      await tester.pumpAndSettle();
+
+      final dialog = find.byType(AlertDialog);
+      final resetField = find.descendant(
+        of: dialog,
+        matching: find.byType(TextFormField),
+      );
+      await tester.enterText(resetField, 'bekir@example.com');
+      await tester.tap(find.text('DEVAM ET'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(
+        find.text('Şifre sıfırlama servisi henüz bağlanmadı.'),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<TextFormField>(find.byType(TextFormField).first)
+            .controller!.text,
+        'bekir@example.com',
+      );
+    });
+
     testWidgets('registration requires terms acceptance', (tester) async {
       await openRegistration(tester);
       await fillRegistration(tester);
