@@ -35,7 +35,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final __resetEmailController = TextEditingController();
+  final _resetEmailController = TextEditingController();
 
   bool _isLogin = true;
   bool _hidePassword = true;
@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    __resetEmailController.dispose();
+    _resetEmailController.dispose();
     super.dispose();
   }
 
@@ -69,7 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _showPasswordResetDialog() async {
-    __resetEmailController.text = _emailController.text.trim();
+    _resetEmailController.text = _emailController.text.trim();
     final resetFormKey = GlobalKey<FormState>();
 
     final shouldContinue = await showDialog<bool>(
