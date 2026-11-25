@@ -66,6 +66,155 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  Future<void> _showPasswordResetDialog() async {
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    final resetFormKey = GlobalKey<FormState>();
+
+    final shouldContinue = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        scrollable: true,
+        backgroundColor: const Color(0xFF171717),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: Color(0xFF303030)),
+        ),
+        title: const Text(
+          'Şifremi unuttum',
+          style: TextStyle(
+            color: Color(0xFFF2F2F2),
+            fontSize: 19,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Form(
+          key: resetFormKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Hesabınıza ait e-posta adresini girin.',
+                style: TextStyle(
+                  color: Color(0xFFBDBDBD),
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: resetEmailController,
+                autofocus: true,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.done,
+                autocorrect: false,
+                enableSuggestions: false,
+                style: const TextStyle(
+                  color: Color(0xFFF2F2F2),
+                  fontSize: 14,
+                ),
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  hintText: 'ornek@mail.com',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFF686868),
+                    fontSize: 13,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.mail_outline,
+                    color: Color(0xFF999999),
+                    size: 19,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFF111111),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                    borderSide: const BorderSide(color: Color(0xFF303030)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFBDBDBD),
+                      width: 1.2,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                    borderSide: const BorderSide(color: Color(0xFFB85C5C)),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                    borderSide: const BorderSide(color: Color(0xFFB85C5C)),
+                  ),
+                ),
+                validator: (value) => _isValidEmailAddress(value)
+                    ? null
+                    : 'Geçerli bir e-posta adresi girin.',
+                onFieldSubmitted: (_) {
+                  if (resetFormKey.currentState!.validate()) {
+                    Navigator.of(dialogContext).pop(true);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text(
+              'VAZGEÇ',
+              style: TextStyle(color: Color(0xFFBDBDBD)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (resetFormKey.currentState!.validate()) {
+                Navigator.of(dialogContext).pop(true);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF1F1F1),
+              foregroundColor: const Color(0xFF090909),
+            ),
+            child: const Text(
+              'DEVAM ET',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) {
+      resetEmailController.dispose();
+      return;
+    }
+
+    if (shouldContinue == true) {
+      _emailController.text = resetEmailController.text.trim();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Şifre sıfırlama servisi henüz bağlanmadı.'),
+          backgroundColor: Color(0xFF242424),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+    resetEmailController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.sizeOf(context).width > 600;
@@ -341,14 +490,9 @@ class _AuthScreenState extends State<AuthScreen> {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
-                                  onPressed: () => ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Şifre sıfırlama daha sonra eklenecek.',
-                                      ),
-                                    ),
-                                  ),
+                                  onPressed: () {
+                                    _showPasswordResetDialog();
+                                  },
                                   child: const Text(
                                     'Şifremi unuttum',
                                     style: TextStyle(
