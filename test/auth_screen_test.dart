@@ -462,6 +462,7 @@ void main() {
             .controller!.text,
         'bekir@example.com',
       );
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('registration requires terms acceptance', (tester) async {
