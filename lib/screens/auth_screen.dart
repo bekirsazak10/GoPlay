@@ -35,6 +35,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final __resetEmailController = TextEditingController();
 
   bool _isLogin = true;
   bool _hidePassword = true;
@@ -46,6 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    __resetEmailController.dispose();
     super.dispose();
   }
 
@@ -67,9 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _showPasswordResetDialog() async {
-    final resetEmailController = TextEditingController(
-      text: _emailController.text.trim(),
-    );
+    __resetEmailController.text = _emailController.text.trim();
     final resetFormKey = GlobalKey<FormState>();
 
     final shouldContinue = await showDialog<bool>(
@@ -105,7 +105,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: resetEmailController,
+                controller: _resetEmailController,
                 autofocus: true,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.done,
@@ -197,12 +197,11 @@ class _AuthScreenState extends State<AuthScreen> {
     );
 
     if (!mounted) {
-      resetEmailController.dispose();
-      return;
+        return;
     }
 
     if (shouldContinue == true) {
-      _emailController.text = resetEmailController.text.trim();
+      _emailController.text = _resetEmailController.text.trim();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Şifre sıfırlama servisi henüz bağlanmadı.'),
@@ -212,7 +211,6 @@ class _AuthScreenState extends State<AuthScreen> {
       );
     }
 
-    resetEmailController.dispose();
   }
 
   @override
