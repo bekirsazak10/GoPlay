@@ -379,6 +379,31 @@ void main() {
       expect(find.text('Şifreler eşleşmiyor.'), findsOneWidget);
     });
 
+    testWidgets(
+        'registration revalidates confirmation when the password changes',
+        (tester) async {
+      await openRegistration(tester);
+      await fillRegistration(tester);
+
+      final fields = find.byType(TextFormField);
+      final passwordField = fields.at(2);
+      final confirmationField = fields.at(3);
+
+      expect(find.text('Şifreler eşleşmiyor.'), findsNothing);
+
+      await tester.ensureVisible(passwordField);
+      await tester.enterText(passwordField, 'Different123!');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Şifreler eşleşmiyor.'), findsOneWidget);
+
+      await tester.ensureVisible(confirmationField);
+      await tester.enterText(confirmationField, 'Different123!');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Şifreler eşleşmiyor.'), findsNothing);
+    });
+
     testWidgets('registration form supports compact screens and drag dismissal',
         (tester) async {
       tester.view.physicalSize = const Size(390, 700);
