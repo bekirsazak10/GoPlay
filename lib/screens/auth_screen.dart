@@ -396,6 +396,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                 autocorrect: false,
                                 enableSuggestions: false,
                                 autofillHints: const [AutofillHints.newPassword],
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 onFieldSubmitted: (_) => _submit(),
                                 suffix: IconButton(
                                   tooltip: _hideConfirmPassword
@@ -759,6 +761,7 @@ class _AuthScreenState extends State<AuthScreen> {
     bool autocorrect = true,
     bool enableSuggestions = true,
     Iterable<String>? autofillHints,
+    AutovalidateMode? autovalidateMode,
     bool obscureText = false,
     ValueChanged<String>? onFieldSubmitted,
     Widget? suffix,
@@ -775,6 +778,7 @@ class _AuthScreenState extends State<AuthScreen> {
       autocorrect: autocorrect,
       enableSuggestions: enableSuggestions,
       autofillHints: autofillHints,
+      autovalidateMode: autovalidateMode,
       obscureText: obscureText,
       style: const TextStyle(color: Color(0xFFF2F2F2), fontSize: 14),
       cursorColor: Colors.white,
