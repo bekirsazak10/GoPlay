@@ -92,6 +92,54 @@ void main() {
       }
     });
 
+    testWidgets('login trims surrounding email whitespace before submit',
+        (tester) async {
+      await openScreen(tester);
+
+      final fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(0), '  bekir@example.com  ');
+      await tester.enterText(fields.at(1), '123456');
+      await tester.tap(find.text('GİRİŞ YAP'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<TextFormField>(fields.at(0)).controller!.text,
+        'bekir@example.com',
+      );
+      expect(
+        find.text('Form hazır. Giriş servisi henüz bağlanmadı.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('registration trims surrounding email whitespace before submit',
+        (tester) async {
+      await openRegistration(tester);
+      await fillRegistration(tester);
+
+      final fields = find.byType(TextFormField);
+      await tester.enterText(fields.at(1), '  bekir@example.com  ');
+
+      final checkbox = find.byType(Checkbox);
+      await tester.ensureVisible(checkbox);
+      await tester.tap(checkbox);
+      await tester.pumpAndSettle();
+
+      final submitButton = find.text('HESAP OLUŞTUR');
+      await tester.ensureVisible(submitButton);
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<TextFormField>(fields.at(1)).controller!.text,
+        'bekir@example.com',
+      );
+      expect(
+        find.text('Form hazır. Kayıt servisi henüz bağlanmadı.'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('login submits when the keyboard Done action is pressed',
         (tester) async {
       await openScreen(tester);

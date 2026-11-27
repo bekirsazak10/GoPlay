@@ -54,6 +54,13 @@ class _AuthScreenState extends State<AuthScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
+    // Keep the value sent to the future authentication service normalized.
+    final normalizedEmail = _emailController.text.trim();
+    _emailController.value = TextEditingValue(
+      text: normalizedEmail,
+      selection: TextSelection.collapsed(offset: normalizedEmail.length),
+    );
+
     // Authentication service will be connected in the next development step.
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
